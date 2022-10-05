@@ -25,19 +25,19 @@ let map: google.maps.Map;
 
 const mapOptions = {
   center: {
-    lat: 53.55493986295417,
-    lng: 10.007137126703523
+    lat: 40.736902,
+    lng: -73.989191
   },
   heading: 324.66666666666674,
   tilt: 65.66666666666667,
-  zoom: 19.43375,
+  zoom: 20,
   mapId: "15431d2b469f209e",
   disableDefaultUI: true,
   backgroundColor: 'transparent',
   gestureHandling: 'greedy',
 };
 
-const BUILDING_HEIGHT = 31; //height of wireframe
+const BUILDING_HEIGHT = 4; //height of wireframe
 const BUILDING_LINE_COLOR = 0xff0000; //color of lines 
 const BUILDING_FILL_COLOR = 0x000000; //color of wireframe sides
 const Z_FIGHTING_OFFSET = 0.01;  
@@ -58,19 +58,41 @@ function initMap(): void {
   overlay.setMap(map);
 
   initScene(overlay).then(() => overlay.requestRedraw());
+
+  let infoWindow = new google.maps.InfoWindow({
+    content: "Click the map to get Lat/Lng!",
+    position: mapOptions.center,
+  });
+
+  // Configure the click listener.
+  map.addListener("click", (mapsMouseEvent) => {
+    // Close the current InfoWindow.
+    infoWindow.close();
+
+    // Create a new InfoWindow.
+    infoWindow = new google.maps.InfoWindow({
+      position: mapsMouseEvent.latLng,
+    });
+    infoWindow.setContent(
+      JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+    );
+    infoWindow.open(map);
+  });
 }
 
 async function initScene(overlay) {
   const scene = overlay.getScene();
 
   const wireframePath = [ //7 points based on the 7 points of the example building
-    [10.00787808793857, 53.554574397774715],
-    [10.006971374559072, 53.55444226566294],
-    [10.006565280581388, 53.55467172811441],
-    [10.006569569754523, 53.55471724470295],
-    [10.007768697370686, 53.554874083634],
-    [10.007848668422987, 53.554846301309745],
-    [10.007913475744536, 53.554604563663226]
+    [-73.989513, 40.736856],
+    [-73.989261, 40.736747],
+    [-73.989114, 40.736685],
+    [-73.988843, 40.737046],
+    [-73.988861, 40.737053],
+    [-73.988791, 40.737151],
+    [-73.989016, 40.737248],
+    [-73.989220, 40.736978],
+    [-73.989395, 40.737050],
   ];
 
   const points = wireframePath.map(([lng, lat]) =>
