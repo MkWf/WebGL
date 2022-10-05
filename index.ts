@@ -18,24 +18,23 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 let map: google.maps.Map;
 
 const mapOptions = {
-  tilt: 0,
-  heading: 0,
-  zoom: 18,
+  tilt: 70,
+  heading: 360,
+  zoom: 20,
   center: { lat: 42.331491, lng: -71.070327 },
   mapId: "15431d2b469f209e",
-  // disable interactions due to animation loop and moveCamera
-  disableDefaultUI: true,
-  gestureHandling: "none",
-  keyboardShortcuts: false,
+  //disableDefaultUI: true,
+  //gestureHandling: "none",
+  //keyboardShortcuts: false,
 };
 
 function initMap(): void {
   const mapDiv = document.getElementById("map") as HTMLElement;
   map = new google.maps.Map(mapDiv, mapOptions);
-  initWebglOverlayView(map);
+  //initWebglOverlayView(map);
 }
 
-function initWebglOverlayView(map: google.maps.Map): void {
+/*function initWebglOverlayView(map: google.maps.Map): void {
   let scene, renderer, camera, loader;
   const webglOverlayView = new google.maps.WebGLOverlayView();
 
@@ -112,7 +111,7 @@ function initWebglOverlayView(map: google.maps.Map): void {
     renderer.resetState();
   };
   webglOverlayView.setMap(map);
-}
+}*/
 
 declare global {
   interface Window {
