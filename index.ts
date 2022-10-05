@@ -62,10 +62,12 @@ function initMap(): void {
   );
   scene.add(box);
 
-  const boxLocation = {...mapOptions.center, altitude: 50};
+  const boxLocation = {...mapOptions.center, altitude: 0};
   overlay.latLngAltToVector3(boxLocation, box.position);
 
   overlay.setMap(map);
+
+  let newAltitude = 0;
 
   overlay.update = () => {
     const intersections = overlay.raycast(mousePosition);
@@ -77,6 +79,11 @@ function initMap(): void {
 
     highlightedObject = intersections[0].object;
     highlightedObject.material.color.setHex(HIGHLIGHT_COLOR);
+
+    newAltitude = newAltitude+0.1;
+    const newLocation = {...mapOptions.center, altitude: newAltitude};
+    overlay.latLngAltToVector3(newLocation, box.position);
+    //overlay.requestRedraw();
   }
 
   const mousePosition = new Vector2();
