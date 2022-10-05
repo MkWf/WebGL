@@ -37,11 +37,11 @@ const mapOptions = {
   gestureHandling: 'greedy',
 };
 
-const BUILDING_HEIGHT = 31;
-const BUILDING_LINE_COLOR = 0xffffff;
-const BUILDING_FILL_COLOR = 0x000000;
-const Z_FIGHTING_OFFSET = 0.001;
-const LOGO_SIZE = [16, 16];
+const BUILDING_HEIGHT = 31; //height of wireframe
+const BUILDING_LINE_COLOR = 0xff0000; //color of lines 
+const BUILDING_FILL_COLOR = 0x000000; //color of wireframe sides
+const Z_FIGHTING_OFFSET = 0.01;  
+const LOGO_SIZE = [16, 16]; 
 const LOGO_POSITION = {
   lat: 53.55463986295417,
   lng: 10.007317126703523,
@@ -63,7 +63,7 @@ function initMap(): void {
 async function initScene(overlay) {
   const scene = overlay.getScene();
 
-  const wireframePath = [
+  const wireframePath = [ //7 points based on the 7 points of the example building
     [10.00787808793857, 53.554574397774715],
     [10.006971374559072, 53.55444226566294],
     [10.006565280581388, 53.55467172811441],
@@ -72,6 +72,7 @@ async function initScene(overlay) {
     [10.007848668422987, 53.554846301309745],
     [10.007913475744536, 53.554604563663226]
   ];
+
   const points = wireframePath.map(([lng, lat]) =>
     overlay.latLngAltToVector3({lat, lng})
   );
@@ -95,6 +96,7 @@ async function initScene(overlay) {
   };
 }
 
+//Gets the layout of the building 
 function getWireframe(points) {
   const positions = new Float32Array(18 * points.length).fill(0);
 
@@ -134,6 +136,7 @@ function getWireframe(points) {
   return line;
 }
 
+//Textures the sides of the building
 function getBuilding(points) {
   const buildingMaterial = new MeshStandardMaterial({
     transparent: true,
