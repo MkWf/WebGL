@@ -12,7 +12,8 @@
   ExtrudeGeometry,
   TextureLoader,
   MeshBasicMaterial,
-  PlaneGeometry
+  PlaneGeometry,
+  BoxGeometry
 } from 'three';
 
 import {LineSegmentsGeometry} from 'three/examples/jsm/lines/LineSegmentsGeometry';
@@ -37,7 +38,7 @@ const mapOptions = {
   gestureHandling: 'greedy',
 };
 
-const BUILDING_HEIGHT = 4; //height of wireframe
+const BUILDING_HEIGHT = 64; //height of wireframe
 const BUILDING_LINE_COLOR = 0xff0000; //color of lines 
 const BUILDING_FILL_COLOR = 0x000000; //color of wireframe sides
 const Z_FIGHTING_OFFSET = 0.01;  
@@ -103,6 +104,22 @@ async function initScene(overlay) {
   scene.add(line);
   scene.add(getBuilding(points));
   scene.add(await getLogo(overlay));
+
+  const cube = new Mesh(
+    new BoxGeometry(50, 5, 1),
+    new MeshStandardMaterial({color: 0xff0000})
+  );
+
+  cube.rotateZ(-9.9);
+
+  const roadHighlight = {center: {
+    lat: 40.736748,
+    lng: -73.989355
+  }};
+  const cubeLocation = {...roadHighlight.center, altitude: 1};
+  overlay.latLngAltToVector3(cubeLocation, cube.position);
+
+  scene.add(cube);
 
   overlay.update = () => {
     const time = performance.now();
