@@ -8,12 +8,14 @@
   Mesh,
   MeshStandardMaterial,
   Vector3,
+  VideoTexture,
   Shape,
   ExtrudeGeometry,
   TextureLoader,
   MeshBasicMaterial,
   PlaneGeometry,
-  BoxGeometry
+  BoxGeometry,
+  FrontSide,
 } from 'three';
 
 import {LineSegmentsGeometry} from 'three/examples/jsm/lines/LineSegmentsGeometry';
@@ -21,6 +23,16 @@ import {Line2} from 'three/examples/jsm/lines/Line2.js';
 import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
 import UBI_ICON from './ubi-icon.png';
 import ThreeJSOverlayView from '@ubilabs/threejs-overlay-view';
+import VIDEO_URL from "./Exteros_UnionSq_NE_20220930_17.mp4";
+
+const SCREEN_SIZE = [50, 25];
+const ALTITUDE_OFFSET = 3;
+const SCREEN_POSITION = {
+  lat: 40.736902,
+  lng: -73.989191,
+  altitude: SCREEN_SIZE[1] / 2 + ALTITUDE_OFFSET
+};
+const SCREEN_ROTATION = [Math.PI / 2, 0, Math.PI / 13];
 
 let map: google.maps.Map;
 
@@ -83,6 +95,29 @@ function initMap(): void {
 
 async function initScene(overlay) {
   const scene = overlay.getScene();
+  const video = document.createElement('video');
+
+  video.src = VIDEO_URL;
+  video.loop = true;
+  video.muted = true;
+  video.autoplay = true;
+  video.load();
+  video.play();
+
+  const videoTexture = new VideoTexture(video);
+  const videoMaterial = new MeshBasicMaterial({
+    map: videoTexture,
+    side: FrontSide
+  });
+
+  const screenGeometry = new PlaneGeometry(...SCREEN_SIZE);
+  const screen = new Mesh(screenGeometry, videoMaterial);
+
+  overlay.latLngAltToVector3(SCREEN_POSITION, screen.position);
+  screen.rotation.order = 'ZYX';
+  screen.rotation.set(...SCREEN_ROTATION);
+
+  scene.add(screen);
 
   const wireframePath = [ //7 points based on the 7 points of the example building
     [-73.989513, 40.736856],
