@@ -5,15 +5,28 @@
  */
 
 import {
+  Mesh,
+  BoxGeometry,
+  MechBasicMaterial,
+  MeshStandardMaterial,
+  Vector3,
+  Shape,
+  ExtrudeGeometry,
+  TextureLoader,
+  MeshBasicMaterial,
+  PlaneGeometry,
   AmbientLight,
   DirectionalLight,
   Matrix4,
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
+  Vector2
 } from "three";
 
+import ThreeJSOverlayView from '@ubilabs/threejs-overlay-view';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
 
 let map: google.maps.Map;
 
@@ -23,6 +36,7 @@ const mapOptions = {
   zoom: 19,
   center: { lat: 42.331491, lng: -71.070327 },
   mapId: "15431d2b469f209e",
+  //backgroundColor: 'transparent',
   //disableDefaultUI: true,
   //gestureHandling: "none",
   //keyboardShortcuts: false,
@@ -31,10 +45,58 @@ const mapOptions = {
 function initMap(): void {
   const mapDiv = document.getElementById("map") as HTMLElement;
   map = new google.maps.Map(mapDiv, mapOptions);
-  initWebglOverlayView(map);
+
+  const DEFAULT_COLOR = 0xffffff;
+  const HIGHLIGHT_COLOR = 0x00ffff;
+
+  let highlightedObject = null;
+    
+  const overlay = new ThreeJSOverlayView({
+    lat: 42.331491, lng: -71.070327
+  })
+
+  const scene = overlay.getScene();
+  const box = new Mesh(
+    new BoxGeometry(50, 50, 50),
+    new MeshBasicMaterial({color: 0xff0000})
+  );
+  scene.add(box);
+
+  overlay.setMap(map);
+
+  overlay.update = () => {
+    const intersections = overlay.raycast(mousePosition);
+    if (highlightedObject) {
+      highlightedObject.material.color.setHex(DEFAULT_COLOR);
+    }
+
+    if (intersections.length === 0) return;
+
+    highlightedObject = intersections[0].object;
+    highlightedObject.material.color.setHex(HIGHLIGHT_COLOR);
+  }
+
+  const mousePosition = new Vector2();
+
+  map.addListener('mousemove', ev => {
+    const {domEvent} = ev;
+    const {left, top, width, height} = mapDiv.getBoundingClientRect();
+
+    const x = domEvent.clientX - left;
+    const y = domEvent.clientY - top;
+
+    mousePosition.x = 2 * (x / width) - 1;
+    mousePosition.y = 1 - 2 * (y / height);
+
+    // since the actual raycasting is happening in the update function,
+    // we have to make sure that it will be called for the next frame.
+    overlay.requestRedraw();
+  });
 }
 
-function initWebglOverlayView(map: google.maps.Map): void {
+
+
+/*function initWebglOverlayView(map: google.maps.Map): void {
   let scene, renderer, camera, loader;
   const webglOverlayView = new google.maps.WebGLOverlayView();
 
@@ -86,7 +148,7 @@ function initWebglOverlayView(map: google.maps.Map): void {
           mapOptions.zoom -= 0.0005;
         } else {
           renderer.setAnimationLoop(null);
-        }*/
+        }
       });
     };
   };
@@ -109,7 +171,7 @@ function initWebglOverlayView(map: google.maps.Map): void {
     renderer.resetState();
   };
   webglOverlayView.setMap(map);
-}
+}*/
 
 declare global {
   interface Window {
@@ -118,3 +180,5 @@ declare global {
 }
 window.initMap = initMap;
 export {};
+
+
