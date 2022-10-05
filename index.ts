@@ -21,18 +21,18 @@
 import {LineSegmentsGeometry} from 'three/examples/jsm/lines/LineSegmentsGeometry';
 import {Line2} from 'three/examples/jsm/lines/Line2.js';
 import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
-import UBI_ICON from './ubi-icon.png';
+import ABSRE_LOGO from './absreLogo.png';
 import ThreeJSOverlayView from '@ubilabs/threejs-overlay-view';
 import VIDEO_URL from "./Exteros_UnionSq_NE_20220930_17.mp4";
 
 const SCREEN_SIZE = [50, 25];
 const ALTITUDE_OFFSET = 3;
 const SCREEN_POSITION = {
-  lat: 40.736902,
-  lng: -73.989191,
+  lat: 40.736759,
+  lng: -73.989958,
   altitude: SCREEN_SIZE[1] / 2 + ALTITUDE_OFFSET
 };
-const SCREEN_ROTATION = [Math.PI / 2, 0, Math.PI / 13];
+const SCREEN_ROTATION = [Math.PI / 2, 0, Math.PI / 4];
 
 let map: google.maps.Map;
 
@@ -54,13 +54,13 @@ const BUILDING_HEIGHT = 64; //height of wireframe
 const BUILDING_LINE_COLOR = 0xff0000; //color of lines 
 const BUILDING_FILL_COLOR = 0x000000; //color of wireframe sides
 const Z_FIGHTING_OFFSET = 0.01;  
-const LOGO_SIZE = [16, 16]; 
+const LOGO_SIZE = [32, 32]; 
 const LOGO_POSITION = {
-  lat: 53.55463986295417,
-  lng: 10.007317126703523,
-  altitude: BUILDING_HEIGHT + Z_FIGHTING_OFFSET
+  lat: 40.736777,
+  lng: -73.988999,
+  altitude: BUILDING_HEIGHT/2 + Z_FIGHTING_OFFSET
 };
-const LOGO_ROTATION_Z = Math.PI / 12;
+const LOGO_ROTATION_Z = Math.PI / 3;
 const COLOR_CHANGE_DURATION = 30; // completes one hue cycle in x seconds
 
 function initMap(): void {
@@ -234,7 +234,7 @@ function getBuilding(points) {
 function getLogo(overlay) {
   return new Promise(resolve => {
     const loader = new TextureLoader();
-    loader.load(UBI_ICON, texture => {
+    loader.load(ABSRE_LOGO, texture => {
       const logoGeometry = new PlaneGeometry(...LOGO_SIZE);
       const logoMaterial = new MeshBasicMaterial({
         map: texture,
@@ -243,6 +243,7 @@ function getLogo(overlay) {
       const logo = new Mesh(logoGeometry, logoMaterial);
       overlay.latLngAltToVector3(LOGO_POSITION, logo.position);
       logo.rotateZ(LOGO_ROTATION_Z);
+      logo.rotateX(1.6);
       resolve(logo);
     });
   });
