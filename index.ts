@@ -4,31 +4,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {
+ import {
   Mesh,
-  BoxGeometry,
-  MechBasicMaterial,
-  MeshStandardMaterial,
-  Vector3,
-  Shape,
-  ExtrudeGeometry,
-  TextureLoader,
+  VideoTexture,
   MeshBasicMaterial,
-  PlaneGeometry,
-  AmbientLight,
-  DirectionalLight,
-  Matrix4,
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer,
-  Vector2
-} from "three";
+  FrontSide,
+  PlaneGeometry
+} from 'three';
 
+import VIDEO_URL from "./BigBuckBunny.mp4";   
 import ThreeJSOverlayView from '@ubilabs/threejs-overlay-view';
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-
 
 let map: google.maps.Map;
+
+const SCREEN_SIZE = [50, 25];
+const ALTITUDE_OFFSET = 3;
+const SCREEN_POSITION = {
+  lat: 42.331491,
+  lng: -71.070327,
+  altitude: SCREEN_SIZE[1] / 2 + ALTITUDE_OFFSET
+};
+const SCREEN_ROTATION = [Math.PI / 2, 0, Math.PI / 13];
 
 const mapOptions = {
   tilt: 70,
@@ -46,62 +42,36 @@ function initMap(): void {
   const mapDiv = document.getElementById("map") as HTMLElement;
   map = new google.maps.Map(mapDiv, mapOptions);
 
-  const DEFAULT_COLOR = 0xffffff;
-  const HIGHLIGHT_COLOR = 0x00ffff;
-
-  let highlightedObject = null;
-    
   const overlay = new ThreeJSOverlayView({
     lat: 42.331491, lng: -71.070327
   })
-
-  const scene = overlay.getScene();
-  const box = new Mesh(
-    new BoxGeometry(50, 50, 50),
-    new MeshBasicMaterial({color: 0xff0000})
-  );
-  scene.add(box);
-
-  const boxLocation = {...mapOptions.center, altitude: 0};
-  overlay.latLngAltToVector3(boxLocation, box.position);
-
   overlay.setMap(map);
 
-  let newAltitude = 0;
+  const scene = overlay.getScene();
+  const video = document.createElement('video');
 
-  overlay.update = () => {
-    const intersections = overlay.raycast(mousePosition);
-    if (highlightedObject) {
-      highlightedObject.material.color.setHex(DEFAULT_COLOR);
-    }
+  video.src = VIDEO_URL;
+  video.loop = true;
+  video.muted = true;
+  video.autoplay = true;
+  video.load();
+  video.play();
 
-    if (intersections.length === 0) return;
-
-    highlightedObject = intersections[0].object;
-    highlightedObject.material.color.setHex(HIGHLIGHT_COLOR);
-
-    newAltitude = newAltitude+0.1;
-    const newLocation = {...mapOptions.center, altitude: newAltitude};
-    overlay.latLngAltToVector3(newLocation, box.position);
-    overlay.requestRedraw();
-  }
-
-  const mousePosition = new Vector2();
-
-  map.addListener('mousemove', ev => {
-    const {domEvent} = ev;
-    const {left, top, width, height} = mapDiv.getBoundingClientRect();
-
-    const x = domEvent.clientX - left;
-    const y = domEvent.clientY - top;
-
-    mousePosition.x = 2 * (x / width) - 1;
-    mousePosition.y = 1 - 2 * (y / height);
-
-    // since the actual raycasting is happening in the update function,
-    // we have to make sure that it will be called for the next frame.
-    overlay.requestRedraw();
+  const videoTexture = new VideoTexture(video);
+  const videoMaterial = new MeshBasicMaterial({
+    map: videoTexture,
+    side: FrontSide
   });
+
+  const screenGeometry = new PlaneGeometry(...SCREEN_SIZE);
+  const screen = new Mesh(screenGeometry, videoMaterial);
+
+  overlay.latLngAltToVector3(SCREEN_POSITION, screen.position);
+  screen.rotation.order = 'ZYX';
+  screen.rotation.set(...SCREEN_ROTATION);
+
+  scene.add(screen);
+  overlay.update = () => overlay.requestRedraw();
 }
 
 
