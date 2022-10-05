@@ -19,8 +19,8 @@ let map: google.maps.Map;
 
 const mapOptions = {
   tilt: 70,
-  heading: 360,
-  zoom: 20,
+  heading: 180,
+  zoom: 19,
   center: { lat: 42.331491, lng: -71.070327 },
   mapId: "15431d2b469f209e",
   //disableDefaultUI: true,
@@ -31,18 +31,16 @@ const mapOptions = {
 function initMap(): void {
   const mapDiv = document.getElementById("map") as HTMLElement;
   map = new google.maps.Map(mapDiv, mapOptions);
-  //initWebglOverlayView(map);
+  initWebglOverlayView(map);
 }
 
-/*function initWebglOverlayView(map: google.maps.Map): void {
+function initWebglOverlayView(map: google.maps.Map): void {
   let scene, renderer, camera, loader;
   const webglOverlayView = new google.maps.WebGLOverlayView();
 
   webglOverlayView.onAdd = () => {
     // Set up the scene.
-
     scene = new Scene();
-
     camera = new PerspectiveCamera();
 
     const ambientLight = new AmbientLight(0xffffff, 0.75); // Soft white light.
@@ -57,7 +55,7 @@ function initMap(): void {
     const source =
       "https://raw.githubusercontent.com/googlemaps/js-samples/main/assets/pin.gltf";
     loader.load(source, (gltf) => {
-      gltf.scene.scale.set(10, 10, 10);
+      gltf.scene.scale.set(4, 4, 4);
       gltf.scene.rotation.x = Math.PI; // Rotations are in radians.
       scene.add(gltf.scene);
     });
@@ -76,7 +74,7 @@ function initMap(): void {
     // Wait to move the camera until the 3D model loads.
     loader.manager.onLoad = () => {
       renderer.setAnimationLoop(() => {
-        webglOverlayView.requestRedraw();
+        /*webglOverlayView.requestRedraw();
         const { tilt, heading, zoom } = mapOptions;
         map.moveCamera({ tilt, heading, zoom });
 
@@ -88,7 +86,7 @@ function initMap(): void {
           mapOptions.zoom -= 0.0005;
         } else {
           renderer.setAnimationLoop(null);
-        }
+        }*/
       });
     };
   };
@@ -97,7 +95,7 @@ function initMap(): void {
     const latLngAltitudeLiteral: google.maps.LatLngAltitudeLiteral = {
       lat: mapOptions.center.lat,
       lng: mapOptions.center.lng,
-      altitude: 100,
+      altitude: 30,
     };
 
     // Update camera matrix to ensure the model is georeferenced correctly on the map.
@@ -111,7 +109,7 @@ function initMap(): void {
     renderer.resetState();
   };
   webglOverlayView.setMap(map);
-}*/
+}
 
 declare global {
   interface Window {
