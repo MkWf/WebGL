@@ -83,7 +83,7 @@ function initMap(): void {
     newAltitude = newAltitude+0.1;
     const newLocation = {...mapOptions.center, altitude: newAltitude};
     overlay.latLngAltToVector3(newLocation, box.position);
-    //overlay.requestRedraw();
+    overlay.requestRedraw();
   }
 
   const mousePosition = new Vector2();
