@@ -21,7 +21,7 @@ const mapOptions = {
   tilt: 0,
   heading: 0,
   zoom: 18,
-  center: { lat: 35.6594945, lng: 139.6999859 },
+  center: { lat: 42.331491, lng: -71.070327 },
   mapId: "15431d2b469f209e",
   // disable interactions due to animation loop and moveCamera
   disableDefaultUI: true,
