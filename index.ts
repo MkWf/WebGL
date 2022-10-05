@@ -62,6 +62,9 @@ function initMap(): void {
   );
   scene.add(box);
 
+  const boxLocation = {...mapOptions.center, altitude: 50};
+  overlay.latLngAltToVector3(boxLocation, box.position);
+
   overlay.setMap(map);
 
   overlay.update = () => {
